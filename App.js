@@ -25,7 +25,7 @@ export default function App() {
 
   const sendRequest = async () => {
     if (!image || !message) {
-      Alert.alert('Erro', 'Por favor, selecione uma imagem e insira uma mensagem.');
+      Alert.alert('Erro', 'Please, selec a image and insert a message.');
       return;
     }
 
@@ -48,9 +48,9 @@ export default function App() {
     } catch (error) {
       console.error(error);
       if (error.response) {
-        Alert.alert('Erro', error.response.data.details || 'Erro desconhecido no servidor.');
+        Alert.alert('Erro', error.response.data.details || 'Unknown error with the server.');
       } else {
-        Alert.alert('Erro', 'Falha na conexão com o servidor.');
+        Alert.alert('Erro', 'Network failure with the server.');
       }
     } finally {
       setLoading(false);
@@ -62,27 +62,27 @@ export default function App() {
       <Text style={styles.title}>Encontre Objetos</Text>
       <TextInput
         style={styles.input}
-        placeholder="Digite sua mensagem (ex.: Cadê a minha carteira?)"
+        placeholder="type your message (ex.: Where is my bottle?)"
         value={message}
         onChangeText={setMessage}
       />
-      <Button title="Selecionar Imagem" onPress={pickImage} />
+      <Button title="Select a Image" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Button title="Enviar" onPress={sendRequest} disabled={loading} />
+      <Button title="Send" onPress={sendRequest} disabled={loading} />
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {response && <Text style={styles.response}>{response}</Text>}
       {annotatedImage && <Image source={{ uri: annotatedImage }} style={styles.image} />}
       {detectedObjects.length > 0 && (
         <View style={styles.objectsContainer}>
-          <Text style={styles.subtitle}>Objetos Detectados:</Text>
+          <Text style={styles.subtitle}>Object Detected:</Text>
           {detectedObjects.map((obj, index) => (
             <View key={index} style={styles.objectItem}>
               <Text style={styles.objectText}>
-                - {obj.name} (Confiança: {obj.confidence.toFixed(2)})
+                - {obj.name} (Confidence: {obj.confidence.toFixed(2)})
               </Text>
               {obj.nearby && obj.nearby.length > 0 && (
                 <Text style={styles.nearbyText}>
-                  Próximo a: {obj.nearby.join(", ")}
+                  Near: {obj.nearby.join(", ")}
                 </Text>
               )}
             </View>
