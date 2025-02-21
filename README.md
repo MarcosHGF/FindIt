@@ -27,7 +27,6 @@ Object Finder is an AI-powered application that helps locate specific objects in
 
 ### Deployment
 - **Ngrok**: Exposes the Flask backend locally during development.
-- **Docker (Optional)**: Containerization for production deployment.
 
 ## 📸 How It Works
 1. **Upload an Image**: Select an image from your device.
@@ -96,9 +95,13 @@ Object Finder is an AI-powered application that helps locate specific objects in
 ```
 object-finder/
 ├── backend/
-│   ├── app.py                # Flask backend for object detection and NLP
+│   ├── app.py                # Main Flask application
 │   ├── requirements.txt      # Python dependencies
-│   └── models/               # Pre-trained YOLO models
+│   ├── object_detection.py   # Object detection logic
+│   ├── nlp_processing.py     # NLP-related functions
+│   ├── response_generator.py # Response generation logic
+│   ├── utils.py              # Utility functions
+│   └── known_classes.py      # List of known object classes
 ├── frontend/
 │   ├── App.js                # React Native frontend
 │   ├── package.json          # Frontend dependencies

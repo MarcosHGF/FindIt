@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, Image, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, Button, Image, TextInput, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
@@ -8,9 +8,9 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
   const [detectedObjects, setDetectedObjects] = useState([]);
-  const [annotatedImage, setAnnotatedImage] = useState(null); // Armazenar imagem anotada
+  const [annotatedImage, setAnnotatedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Função para selecionar uma imagem
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -18,19 +18,18 @@ export default function App() {
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
 
-  // Função para enviar a imagem e a mensagem ao backend
   const sendRequest = async () => {
     if (!image || !message) {
       Alert.alert('Erro', 'Por favor, selecione uma imagem e insira uma mensagem.');
       return;
     }
 
+    setLoading(true);
     const formData = new FormData();
     formData.append('image', {
       uri: image,
@@ -40,16 +39,21 @@ export default function App() {
     formData.append('message', message);
 
     try {
-      const res = await axios.post('https://85dd-2804-14d-e642-8452-494f-8d85-c398-e146.ngrok-free.app/find_object', formData, {
+      const res = await axios.post('https://f86c-2804-14d-e642-8452-494f-8d85-c398-e146.ngrok-free.app/find_object', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      setResponse(res.data.response); // Resposta principal
-      setDetectedObjects(res.data.detected_objects); // Lista de objetos detectados
-      setAnnotatedImage(`data:image/jpeg;base64,${res.data.annotated_image}`); // Imagem anotada
+      setResponse(res.data.response);
+      setDetectedObjects(res.data.detected_objects);
+      setAnnotatedImage(`data:image/jpeg;base64,${res.data.annotated_image}`);
     } catch (error) {
       console.error(error);
-      Alert.alert('Erro', 'Ocorreu um erro ao processar sua solicitação.');
+      if (error.response) {
+        Alert.alert('Erro', error.response.data.details || 'Erro desconhecido no servidor.');
+      } else {
+        Alert.alert('Erro', 'Falha na conexão com o servidor.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,7 +68,8 @@ export default function App() {
       />
       <Button title="Selecionar Imagem" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Button title="Enviar" onPress={sendRequest} />
+      <Button title="Enviar" onPress={sendRequest} disabled={loading} />
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {response && <Text style={styles.response}>{response}</Text>}
       {annotatedImage && <Image source={{ uri: annotatedImage }} style={styles.image} />}
       {detectedObjects.length > 0 && (
