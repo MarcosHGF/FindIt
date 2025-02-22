@@ -39,7 +39,7 @@ export default function App() {
     formData.append('message', message);
 
     try {
-      const res = await axios.post('https://f86c-2804-14d-e642-8452-494f-8d85-c398-e146.ngrok-free.app/find_object', formData, {
+      const res = await axios.post('https://34ab-2804-14d-e642-8452-494f-8d85-c398-e146.ngrok-free.app/find_object', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setResponse(res.data.response);
